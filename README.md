@@ -11,7 +11,7 @@
 This is more of a python wrapper than a library.
 
 It has two classes. 
-- `XL33COmm` is responsible for opening and starting a communication port like USB.
+- `XL33Comm` is responsible for opening and starting a communication port like USB.
 - `XL330Ctrl` is responsible for controlling dynamixel motors. You can use it for things such as getting the position of the servo, sending to to a goal position etc.
 
 
