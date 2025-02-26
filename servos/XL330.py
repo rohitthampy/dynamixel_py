@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 
 PROTOCOL_VERSION = 2
+HOMING_OFFSET = 0
 # Control table addresses for XL330-M288-T
 
 # EEPROM REGISTER ADDRESSES - Permanently stored in memory once changed
@@ -14,6 +15,7 @@ ADDR_XL330_MODEL_NUMBER = 0
 ADDR_XL330_MODEL_INFORMATION = 2
 ADDR_XL330_FIRMWARE_VERSION = 6
 ADDR_XL330_PRESENT_POSITION = 132
+ADDR_XL330_HOMING_OFFSET = 20
 
 # RAM registers
 ADDR_XL330_TORQUE_ENABLE = 64
@@ -82,10 +84,29 @@ class XL330Ctrl:
         self.port_handler = None
         self.packet_handler = None
         self.goal_pos = None
+        self.torque_is_enabled = False
 
     def set_comm(self, servo_port_handler, servo_packet_handler) -> None:
         self.port_handler = servo_port_handler
         self.packet_handler = servo_packet_handler
+
+    def set_homing_offset(self, angle_offset: float = HOMING_OFFSET, radian: bool = False):
+        if self.torque_is_enabled:
+            raise ValueError("Torque must be disabled before setting homing offset")
+        if radian:
+            if -pi/2 <= angle_offset <= pi/2:
+                homing_pos = int(2048.0 * angle_offset/pi)
+            else:
+                raise ValueError("Homing offset should be between -1.57 and 1.57 radians")
+        else:
+            if -90 <= angle_offset <= 90:
+                homing_pos = int(2048.0*angle_offset/180)
+            else:
+                raise ValueError("Homing offset should be between -90 and 90 degrees")
+        dxl_comm_result, dxl_error = self.packet_handler.write4ByteTxRx(self.port_handler,self.servo_id,
+                                                                        ADDR_XL330_HOMING_OFFSET, homing_pos)
+        self._print_comm_error_result(dxl_comm_result, dxl_error)
+        print(f"Homing offset for servo with id {self.servo_id} is set to: {angle_offset}")
 
     def torque_enabled(self, is_enabled: bool = False) -> None:
         dxl_comm_result, dxl_error = self.packet_handler.write1ByteTxRx(self.port_handler, self.servo_id,
@@ -93,6 +114,7 @@ class XL330Ctrl:
 
         self._print_comm_error_result(dxl_comm_result, dxl_error)
         print(f"Torque enabled for servo with id {self.servo_id} is set to: {is_enabled}")
+        self.torque_is_enabled = is_enabled
 
     def get_position(self, radian: bool = False) -> float:
         reg_data, dxl_comm_result, dxl_error = self.packet_handler.read4ByteTxRx(self.port_handler, self.servo_id,
@@ -108,7 +130,6 @@ class XL330Ctrl:
     def _set_goal_pos(self, angle: float, radian: bool = False) -> None:
         if radian:
             self.goal_pos = int(2048.0*angle/pi)
-            pass
         else:
             self.goal_pos = int(2048.0*angle/180)
 

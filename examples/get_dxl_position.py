@@ -13,6 +13,7 @@ serial.add_servo(servo=servo1)
 
 # Disabling torque for a single servo
 servo1.torque_enabled(is_enabled=False)
+servo1.set_homing_offset(angle_offset=0)
 
 try:
     while True:
