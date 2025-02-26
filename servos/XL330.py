@@ -33,7 +33,6 @@ class XL330Comm:
         self.servos: list = [int]
         self.total_servos: int = 0
 
-
         try:
             self.open_port()
         except SerialException as e:
@@ -65,8 +64,15 @@ class XL330Comm:
         servo.set_comm(self.port_handler, self.packet_handler)
         self.total_servos += 1
 
-    # def torque_enabled(self, is_enabled:bool = False):
-    #     self.packet_handler.write1ByteTxRx(self.port_handler, BROADCAST_ID, ADDR_XL330_TORQUE_ENABLE, is_enabled)
+    def get_servo_ids(self):
+        found_servos = []
+        dxl_data, dxl_comm_result = self.packet_handler.broadcastPing(port=self.port_handler)
+        if dxl_comm_result != COMM_SUCCESS:
+            print(f"{self.packet_handler.getTxRxResult(dxl_comm_result)}")
+
+        for ids in dxl_data:
+            found_servos.append(ids)
+        return found_servos
 
 
 class XL330Ctrl:
@@ -85,13 +91,13 @@ class XL330Ctrl:
         dxl_comm_result, dxl_error = self.packet_handler.write1ByteTxRx(self.port_handler, self.servo_id,
                                                                         ADDR_XL330_TORQUE_ENABLE, is_enabled)
 
-        self.print_comm_error_result(dxl_comm_result, dxl_error)
+        self._print_comm_error_result(dxl_comm_result, dxl_error)
         print(f"Torque enabled for servo with id {self.servo_id} is set to: {is_enabled}")
 
     def get_position(self, radian: bool = False) -> float:
         reg_data, dxl_comm_result, dxl_error = self.packet_handler.read4ByteTxRx(self.port_handler, self.servo_id,
                                                                                  ADDR_XL330_PRESENT_POSITION)
-        self.print_comm_error_result(dxl_comm_result, dxl_error)
+        self._print_comm_error_result(dxl_comm_result, dxl_error)
 
         if radian:
             angle = pi*float(reg_data)/2048.0
@@ -111,9 +117,9 @@ class XL330Ctrl:
         self._set_goal_pos(angle=goal_pos, radian=radian)
         dxl_comm_result, dxl_error = self.packet_handler.write4ByteTxRx(self.port_handler, self.servo_id,
                                                                         ADDR_XL330_GOAL_POSITION, self.goal_pos)
-        self.print_comm_error_result(dxl_comm_result, dxl_error)
+        self._print_comm_error_result(dxl_comm_result, dxl_error)
 
-    def print_comm_error_result(self, comm_result: Any, error: Any) -> None:
+    def _print_comm_error_result(self, comm_result: Any, error: Any) -> None:
         if comm_result != COMM_SUCCESS:
             print(f"\n{self.packet_handler.getTxRxResult(comm_result)}")
             print("Please check the following:\n"

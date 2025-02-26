@@ -6,7 +6,7 @@ from servos.XL330 import XL330Comm, XL330Ctrl
 serial = XL330Comm(port="COM28")
 
 # Declaring a servo object
-servo1 = XL330Ctrl(servo_id=1)
+servo1 = XL330Ctrl(servo_id=8)
 # Adding servo to start communication
 serial.add_servo(servo=servo1)
 
