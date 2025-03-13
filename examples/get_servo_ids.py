@@ -1,4 +1,4 @@
-from servos.XL330 import XL330Comm
+from dynamixel_py.servos.XL330 import XL330Comm
 
 serial = XL330Comm(port="COM28")
 

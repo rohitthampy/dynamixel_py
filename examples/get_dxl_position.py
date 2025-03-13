@@ -1,12 +1,12 @@
 import time
 
-from servos.XL330 import XL330Comm, XL330Ctrl
+from dynamixel_py.servos.XL330 import XL330Comm, XL330Ctrl
 
 # Starting communication for Dynamixel servo
-serial = XL330Comm(port="COM28")
+serial = XL330Comm(port="COM39")
 
 # Declaring a servo object
-servo1 = XL330Ctrl(servo_id=8)
+servo1 = XL330Ctrl(servo_id=12)
 
 # Adding servo to start communication
 serial.add_servo(servo=servo1)
