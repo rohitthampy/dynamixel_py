@@ -1,6 +1,6 @@
 import time
 
-from dynamixel_py.servos.XL330 import XL330Comm, XL330Ctrl
+from dynamixel_py import XL330Comm, XL330Ctrl
 
 # Starting communication for Dynamixel servo
 serial = XL330Comm(port="/dev/ttyUSB0") # Eg: COM28 for windows

@@ -2,7 +2,6 @@ from dynamixel_sdk import *
 from serial import SerialException
 from typing import Any
 from math import pi
-from dataclasses import dataclass
 
 
 PROTOCOL_VERSION = 2
