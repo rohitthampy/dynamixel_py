@@ -1,3 +1,4 @@
 .idea
 dynamixel_py/servos/.__pycache__
 servos/
+./dynamixel_py/__pycache__
