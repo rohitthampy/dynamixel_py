@@ -1,4 +1,5 @@
 .idea
-dynamixel_py/servos/.__pycache__
+src/dynamixel_py/servos/.__pycache__
 servos/
-./dynamixel_py/__pycache__
+src/dynamixel_py/__pycache__
+./examples
