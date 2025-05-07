@@ -1,17 +1,17 @@
 import time
 
-from src.dynamixel_py import XL330Comm, XL330Ctrl
+from dynamixel_py import DxlComm, DxlCtrl
 
 # Starting communication for Dynamixel servo
-serial = XL330Comm(port="/dev/ttyUSB0") # Eg: COM28 for windows
+serial = DxlComm(port="/dev/ttyUSB0") # Eg: COM28 for windows
 
 # Declaring a servo object
-servo1 = XL330Ctrl(servo_id=12)
+servo1 = DxlCtrl(servo_id=1, control_table="XL330")
 
-# Adding servo to start communication
+# # # Adding servo to start communication
 serial.add_servo(servo=servo1)
-
-# Disabling torque for a single servo
+#
+# # Disabling torque for a single servo
 servo1.torque_enabled(is_enabled=False)
 
 try:
