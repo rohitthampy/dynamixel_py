@@ -20,14 +20,14 @@ class DxlComm:
         self.packet_handler = None
 
         self.servo_ids: list[int] = []
-        self.servos: list[Any] = []
+        self.servos: list[Servo] = []
         self.total_servos: int = 0
 
         try:
             self.open_port()
         except SerialException as e:
             print(e)
-            quit()
+            raise RuntimeError(e)
         else:
             print(f"Succeeded to open port {self.port}")
 
@@ -35,7 +35,7 @@ class DxlComm:
             self.set_comm_baud_rate()
         except SerialException as e:
             print(e)
-            quit()
+            raise RuntimeError(e)
         else:
             print(f"Succeeded to set baudrate: {self.baudrate}")
 
@@ -197,5 +197,4 @@ class Servo:
                   "Is the correct baud rate set?\n")
             quit()
         elif error != 0:
-            print(f"{self.packet_handler.getRxPacketError(error)}")
-            quit()
+            raise RuntimeError(f"{self.packet_handler.getRxPacketError(error)}")
