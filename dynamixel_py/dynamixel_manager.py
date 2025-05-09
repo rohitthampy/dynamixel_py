@@ -4,7 +4,7 @@ from serial import SerialException
 from typing import Any
 from math import pi
 
-
+PORT_HANDLER = None
 DEFAULT_PROTOCOL_VERSION = 2
 HOMING_OFFSET = 0
 
@@ -17,7 +17,10 @@ class DxlComm:
         self.baud_rate = baud_rate
 
         self.port_handler = PortHandler(port)
-        self.packet_handler = None
+        global PORT_HANDLER
+        PORT_HANDLER = self.port_handler
+
+        # self.packet_handler = None
 
         self.servo_ids: list[int] = []
         self.servos: list[Servo] = []
@@ -52,11 +55,11 @@ class DxlComm:
         self.port_handler.setBaudRate(baudrate=self.baud_rate)
 
 
-    def add_servo(self, servo):
-        self.servos.append(servo)
-        self.servo_ids.append(servo.servo_id)
-        servo.set_comm(self.port_handler)
-        self.total_servos += 1
+    # def add_servo(self, servo):
+    #     self.servos.append(servo)
+    #     self.servo_ids.append(servo.servo_id)
+    #     servo.set_comm(self.port_handler)
+    #     self.total_servos += 1
 
 
     # def get_servo_ids(self):
@@ -80,7 +83,7 @@ class Servo:
     def __init__(self, servo_id: int, control_table: str, protocol_version: int = DEFAULT_PROTOCOL_VERSION):
 
         self.servo_id = servo_id
-        self.port_handler = None
+        self.port_handler = PORT_HANDLER
 
         self.protocol_version = protocol_version
         global DEFAULT_PROTOCOL_VERSION
@@ -111,8 +114,8 @@ class Servo:
         self.control_table = valid_tables[control_table]
 
 
-    def set_comm(self, servo_port_handler) -> None:
-        self.port_handler = servo_port_handler
+    # def set_comm(self, servo_port_handler) -> None:
+    #     self.port_handler = servo_port_handler
         # self.packet_handler = servo_packet_handler
 
     def _set_middle_pos_val(self, middle_value):
