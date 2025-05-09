@@ -24,7 +24,7 @@ It has two classes.
 2) [x] Test if everything works
 3) [x] Move control table from `dynamixe_manager.py` to `dynamixel_control_tables.py`
 4) [x] Test if everything works.
-5) [ ] Figure out a way of changing the protocol value once and it updates everywhere
+5) [x] Figure out a way of changing the protocol value once and it updates everywhere
 6) [ ] Put the `Servo` class in a different file?
 7) [ ] Add Group / Bulk read write features to `dynamixel_manager.py`.
 8) [x] Maybe packet_handler and the protocol_version should go only into `Servo` class.

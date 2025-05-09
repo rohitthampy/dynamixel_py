@@ -16,6 +16,5 @@ try:
         print(servo1.get_position())
         time.sleep(0.1)
 
-
 except KeyboardInterrupt:
     print("Stopping program")

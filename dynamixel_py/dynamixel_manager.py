@@ -21,7 +21,7 @@ class DxlComm:
         PORT_HANDLER = self.port_handler
 
         try:
-            self.open_port()
+            self.port_handler.openPort()
         except SerialException as e:
             print(e)
             raise RuntimeError(e)
@@ -36,17 +36,11 @@ class DxlComm:
         else:
             print(f"Succeeded to set baud rate: {self.baud_rate}")
 
-
-    def open_port(self):
-        self.port_handler.openPort()
-
-
-    def close_port(self):
-        self.port_handler.closePort()
-
-
     def set_comm_baud_rate(self):
         self.port_handler.setBaudRate(baudrate=self.baud_rate)
+
+    def __del__(self):
+        self.port_handler.closePort()
 
 
     # def add_servo(self, servo):
