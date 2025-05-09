@@ -27,7 +27,7 @@ It has two classes.
 5) [ ] Figure out a way of changing the protocol value once and it updates everywhere
 6) [ ] Put the `Servo` class in a different file?
 7) [ ] Add Group / Bulk read write features to `dynamixel_manager.py`.
-8) [ ] Maybe packet_handler and the protocol_version should go into only into `Servo` class.
+8) [x] Maybe packet_handler and the protocol_version should go only into `Servo` class.
 
 
 

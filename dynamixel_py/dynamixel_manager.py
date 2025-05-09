@@ -11,17 +11,13 @@ HOMING_OFFSET = 0
 
 class DxlComm:
 
-    def __init__(self, port: str = None, baudrate: int = 57600, protocol_version: int = DEFAULT_PROTOCOL_VERSION):
+    def __init__(self, port: str = None, baudrate: int = 57600):
 
         self.port = port
         self.baudrate = baudrate
 
-        self.protocol_version = protocol_version
-        global DEFAULT_PROTOCOL_VERSION
-        DEFAULT_PROTOCOL_VERSION = self.protocol_version
-
         self.port_handler = PortHandler(port)
-        self.packet_handler = PacketHandler(self.protocol_version)
+        self.packet_handler = None
 
         self.servo_ids: list[int] = []
         self.servos: list[Any] = []
@@ -59,38 +55,43 @@ class DxlComm:
     def add_servo(self, servo):
         self.servos.append(servo)
         self.servo_ids.append(servo.servo_id)
-        servo.set_comm(self.port_handler, self.packet_handler)
+        servo.set_comm(self.port_handler)
         self.total_servos += 1
 
 
-    def get_servo_ids(self):
-
-        if self.protocol_version == 1:
-            print("The method get_servo_ids only works with Protocol 2.0")
-            quit()
-
-        found_servos = []
-        dxl_data, dxl_comm_result = self.packet_handler.broadcastPing(port=self.port_handler)
-        if dxl_comm_result != COMM_SUCCESS:
-            print(f"{self.packet_handler.getTxRxResult(dxl_comm_result)}")
-
-        for ids in dxl_data:
-            found_servos.append(ids)
-        return found_servos
+    # def get_servo_ids(self):
+    #
+    #     if self.protocol_version == 1:
+    #         print("The method get_servo_ids only works with Protocol 2.0")
+    #         quit()
+    #
+    #     found_servos = []
+    #     dxl_data, dxl_comm_result = self.packet_handler.broadcastPing(port=self.port_handler)
+    #     if dxl_comm_result != COMM_SUCCESS:
+    #         print(f"{self.packet_handler.getTxRxResult(dxl_comm_result)}")
+    #
+    #     for ids in dxl_data:
+    #         found_servos.append(ids)
+    #     return found_servos
 
 
 class Servo:
 
-    def __init__(self, servo_id: int, control_table: str):
+    def __init__(self, servo_id: int, control_table: str, protocol_version: int = DEFAULT_PROTOCOL_VERSION):
 
         self.servo_id = servo_id
         self.port_handler = None
-        self.packet_handler = None
-        self.protocol_version = DEFAULT_PROTOCOL_VERSION
+
+        self.protocol_version = protocol_version
+        global DEFAULT_PROTOCOL_VERSION
+        DEFAULT_PROTOCOL_VERSION = self.protocol_version
+
+        self.packet_handler = PacketHandler(self.protocol_version)
+
         self.control_table = None
         self.middle_pos_val = 2048.0
         self.goal_pos = None
-        self.torque_is_enabled = False
+        self.is_torque_enabled = False
 
         if self.protocol_version not in control_tables:
             raise ValueError(f"Unsupported protocol version: {self.protocol_version}")
@@ -110,9 +111,9 @@ class Servo:
         self.control_table = valid_tables[control_table]
 
 
-    def set_comm(self, servo_port_handler, servo_packet_handler) -> None:
+    def set_comm(self, servo_port_handler) -> None:
         self.port_handler = servo_port_handler
-        self.packet_handler = servo_packet_handler
+        # self.packet_handler = servo_packet_handler
 
     def _set_middle_pos_val(self, middle_value):
         self.middle_pos_val = middle_value
@@ -120,7 +121,7 @@ class Servo:
     def set_homing_offset(self, angle_offset: float = HOMING_OFFSET, radian: bool = False):
         if self.protocol_version == 1:
             raise RuntimeError(f"set_homing_offset is not available in {self.protocol_version}")
-        if self.torque_is_enabled:
+        if self.is_torque_enabled:
             raise ValueError("Torque must be disabled before setting homing offset")
         if radian:
             if -pi/2 <= angle_offset <= pi/2:
@@ -144,7 +145,7 @@ class Servo:
 
         self._print_comm_error_result(dxl_comm_result, dxl_error)
         print(f"Torque for servo with id {self.servo_id} is set to: {is_enabled}")
-        self.torque_is_enabled = is_enabled
+        self.is_torque_enabled = is_enabled
 
 
     def get_position(self, radian: bool = False) -> float:
@@ -192,7 +193,8 @@ class Servo:
             print(f"\n{self.packet_handler.getTxRxResult(comm_result)}")
             print("Please check the following:\n"
                   "Is the motor connected and powered?\n"
-                  "Is the correct servo_id entered?\n")
+                  "Is the correct servo_id entered?\n"
+                  "Is the correct baud rate set?\n")
             quit()
         elif error != 0:
             print(f"{self.packet_handler.getRxPacketError(error)}")
