@@ -20,12 +20,6 @@ class DxlComm:
         global PORT_HANDLER
         PORT_HANDLER = self.port_handler
 
-        # self.packet_handler = None
-
-        self.servo_ids: list[int] = []
-        self.servos: list[Servo] = []
-        self.total_servos: int = 0
-
         try:
             self.open_port()
         except SerialException as e:

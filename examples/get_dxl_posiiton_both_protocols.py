@@ -11,10 +11,6 @@ servo1 = Servo(servo_id=1, control_table="XC330") # Using the default protocol v
 
 servo2 = Servo(servo_id=11, control_table="AX12", protocol_version=1)
 
-# Adding servos to start communication
-# serial.add_servo(servo=servo1)
-# serial.add_servo(servo=servo2)
-
 # Disabling torque for both servos
 servo1.torque_enabled(is_enabled=False)
 servo2.torque_enabled(is_enabled=False)

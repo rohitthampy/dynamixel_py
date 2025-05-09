@@ -8,9 +8,6 @@ serial = DxlComm(port="/dev/ttyUSB0") # Eg: COM28 for windows
 # Declaring a servo object
 servo1 = Servo(servo_id=1, control_table="XL330")
 
-# Adding servo to start communication
-# serial.add_servo(servo=servo1)
-
 # Disabling torque for a single servo
 servo1.torque_enabled(is_enabled=False)
 
