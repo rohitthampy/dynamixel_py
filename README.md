@@ -16,7 +16,7 @@ This is more of a python wrapper than a library.
 
 It has two classes. 
 - `DxlComm` is responsible for opening and starting a communication port like USB.
-- `DxlCtrl` is responsible for controlling dynamixel motors. You can use it for things such as getting the position of the servo, sending to to a goal position etc.
+- `Servo` is responsible for controlling dynamixel motors. You can use it for things such as getting the position of the servo, sending to to a goal position etc.
 
 ## TODO
 
@@ -24,8 +24,10 @@ It has two classes.
 2) [x] Test if everything works
 3) [x] Move control table from `dynamixe_manager.py` to `dynamixel_control_tables.py`
 4) [x] Test if everything works.
-5) [ ] Add instruction length checking 
-6) [ ] Add Group / Bulk read write features to `dynamixel_manager.py`.
+5) [ ] Figure out a way of changing the protocol value once and it updates everywhere
+6) [ ] Put the `Servo` class in a different file?
+7) [ ] Add Group / Bulk read write features to `dynamixel_manager.py`.
+8) [ ] Maybe packet_handler and the protocol_version should go into only into `Servo` class.
 
 
 
