@@ -11,10 +11,10 @@ HOMING_OFFSET = 0
 
 class DxlComm:
 
-    def __init__(self, port: str = None, baudrate: int = 57600):
+    def __init__(self, port: str = None, baud_rate: int = 57600):
 
         self.port = port
-        self.baudrate = baudrate
+        self.baud_rate = baud_rate
 
         self.port_handler = PortHandler(port)
         self.packet_handler = None
@@ -37,7 +37,7 @@ class DxlComm:
             print(e)
             raise RuntimeError(e)
         else:
-            print(f"Succeeded to set baudrate: {self.baudrate}")
+            print(f"Succeeded to set baud rate: {self.baud_rate}")
 
 
     def open_port(self):
@@ -49,7 +49,7 @@ class DxlComm:
 
 
     def set_comm_baud_rate(self):
-        self.port_handler.setBaudRate(baudrate=self.baudrate)
+        self.port_handler.setBaudRate(baudrate=self.baud_rate)
 
 
     def add_servo(self, servo):

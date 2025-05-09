@@ -3,7 +3,7 @@ import time
 from dynamixel_py import DxlComm, Servo
 
 # Starting communication for Dynamixel servo
-serial = DxlComm(port="/dev/ttyUSB0", baudrate=1000000) # Eg: COM28 for windows
+serial = DxlComm(port="/dev/ttyUSB0", baud_rate=1000000) # Eg: COM28 for windows
 
 # Declaring servo objects
 # By default, the baud rate for the XC330 is 57600, this was changed to 1000000 to work with the AX12
