@@ -43,29 +43,6 @@ class DxlComm:
         self.port_handler.closePort()
 
 
-    # def add_servo(self, servo):
-    #     self.servos.append(servo)
-    #     self.servo_ids.append(servo.servo_id)
-    #     servo.set_comm(self.port_handler)
-    #     self.total_servos += 1
-
-
-    # def get_servo_ids(self):
-    #
-    #     if self.protocol_version == 1:
-    #         print("The method get_servo_ids only works with Protocol 2.0")
-    #         quit()
-    #
-    #     found_servos = []
-    #     dxl_data, dxl_comm_result = self.packet_handler.broadcastPing(port=self.port_handler)
-    #     if dxl_comm_result != COMM_SUCCESS:
-    #         print(f"{self.packet_handler.getTxRxResult(dxl_comm_result)}")
-    #
-    #     for ids in dxl_data:
-    #         found_servos.append(ids)
-    #     return found_servos
-
-
 class Servo:
 
     def __init__(self, servo_id: int, control_table: str, protocol_version: int = DEFAULT_PROTOCOL_VERSION):
@@ -100,11 +77,6 @@ class Servo:
             print("Changing middle position value to 512")
             self._set_middle_pos_val(512.0)
         self.control_table = valid_tables[control_table]
-
-
-    # def set_comm(self, servo_port_handler) -> None:
-    #     self.port_handler = servo_port_handler
-        # self.packet_handler = servo_packet_handler
 
     def _set_middle_pos_val(self, middle_value):
         self.middle_pos_val = middle_value
@@ -181,11 +153,10 @@ class Servo:
 
     def _print_comm_error_result(self, comm_result: Any, error: Any) -> None:
         if comm_result != COMM_SUCCESS:
-            print(f"\n{self.packet_handler.getTxRxResult(comm_result)}")
             print("Please check the following:\n"
                   "Is the motor connected and powered?\n"
                   "Is the correct servo_id entered?\n"
                   "Is the correct baud rate set?\n")
-            quit()
+            raise RuntimeError(f"\n{self.packet_handler.getTxRxResult(comm_result)}")
         elif error != 0:
             raise RuntimeError(f"{self.packet_handler.getRxPacketError(error)}")
