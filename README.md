@@ -12,14 +12,19 @@ It has three classes.
 - `Servo` is responsible for controlling dynamixel motors. You can use it for things such as getting the position of the servo, sending to to a goal position etc.
 - `ServoGroup` is responsible for sending commands and receiving data from servos with the same control table and protocol simultaneously.
 
-## Usage
+## Installing
 
+### Simple install
+The quickest and easiest way of installing this library is through pip.
+Run the command `pip install dynamixel-py`
+
+### Install from source
 1) Clone this repository using `git clone https://github.com/rohitthampy/dynamixel_py.git`
 2) Create a virtual environment and `pip install dynamixel-sdk`
 3) Create your python project at the root of this repository.
 4) Have a look at the examples for inspiration.
 
-## Examples
+## Usage Examples
 ### Examples for controlling one motor at a time
 - Getting position data from a servo
 ```python
