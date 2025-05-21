@@ -1,4 +1,3 @@
-import time
 from dynamixel_py import DxlComm, Servo, ServoGroup
 
 serial = DxlComm(port="/dev/ttyUSB0")
