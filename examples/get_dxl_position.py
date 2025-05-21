@@ -3,7 +3,7 @@ import time
 from dynamixel_py import DxlComm, Servo
 
 # Starting communication for Dynamixel servo
-serial = DxlComm(port="/dev/ttyUSB0") # Eg: COM28 for windows
+serial = DxlComm(port="/dev/ttyUSB0")  # Eg: COM28 for windows
 
 # Declaring a servo object
 servo1 = Servo(servo_id=1, control_table="XL330")

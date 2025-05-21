@@ -22,9 +22,9 @@ time.sleep(0.5)
 
 # Sends the servos to random positions between 0 and 350 degrees
 for i in range(10):
-    servo_group.sync_set_positions([random.randint(0, 350),
-                                    random.randint(0, 350),
-                                    random.randint(0, 350)])
+    servo_group.sync_set_positions(
+        [random.randint(0, 350), random.randint(0, 350), random.randint(0, 350)]
+    )
     time.sleep(0.5)
     print(servo_group.sync_get_positions())
 
