@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dynamixel_py"
+version = "0.0.1"
+dependencies = [
+    "dynamixel-sdk",
+]
+authors = [
+  { name="Rohit Thampy", email="rohitthampy808@gmail.com" },
+]
+description = "A python library to control dynamixel servo motors"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: Apache Software License",
+]
+
+[project.urls]
+Homepage = "https://github.com/rohitthampy/dynamixel_py"
+Issues = "https://github.com/rohitthampy/dynamixel_py/issues"
