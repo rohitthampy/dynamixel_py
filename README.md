@@ -4,7 +4,8 @@ Most of the source code and architecture used in this project was adapted from t
 
 ## About this library
 
-This is more of a python wrapper than a library.
+This library wraps the [dynamixel_sdk](https://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_sdk/overview/#dynamixel-sdk) 
+to hide its complexity and attempts to expose its features in a more user-friendly manner.
 
 It has three classes. 
 - `DxlComm` is responsible for opening and starting a communication port like USB.
