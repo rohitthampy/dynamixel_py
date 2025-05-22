@@ -138,7 +138,7 @@ class Servo:
         print(f"Torque for servo with id {self.servo_id} is set to: {is_enabled}")
         self.is_torque_enabled = is_enabled
 
-    def get_position(self, radian: bool = False) -> float:
+    def get_position(self, is_radian: bool = False) -> float:
         if self.protocol_version == 1:
             reg_data, dxl_comm_result, dxl_error = self.packet_handler.read2ByteTxRx(
                 self.port_handler,
@@ -156,21 +156,23 @@ class Servo:
                                    comm_result=dxl_comm_result,
                                    hardware_result=dxl_error)
 
-        if radian:
-            angle = pi * float(reg_data) / self.middle_pos_val
-        else:
-            angle = 180 * float(reg_data) / self.middle_pos_val
+        # if is_radian:
+        #     angle = pi * float(reg_data) / self.middle_pos_val
+        # else:
+        #     angle = 180 * float(reg_data) / self.middle_pos_val
+        angle = utils.pulse_to_angle(pulse=reg_data, mid_val=self.middle_pos_val, is_radian=is_radian)
         return angle
 
-    def _set_goal_pos(self, angle: float, radian: bool = False) -> None:
-        if radian:
-            self.goal_pos = int(self.middle_pos_val * angle / pi)
-        else:
-            self.goal_pos = int(self.middle_pos_val * angle / 180)
+    def _set_goal_pos(self, angle: float, is_radian: bool = False) -> None:
+        self.goal_pos = utils.angle_to_pulse(angle=angle, mid_val=self.middle_pos_val, is_radian=is_radian)
+        # if is_radian:
+        #     self.goal_pos = int(self.middle_pos_val * angle / pi)
+        # else:
+        #     self.goal_pos = int(self.middle_pos_val * angle / 180)
 
     def set_position(self, goal_pos, radian=False) -> None:
 
-        self._set_goal_pos(angle=goal_pos, radian=radian)
+        self._set_goal_pos(angle=goal_pos, is_radian=radian)
 
         if self.protocol_version == 1:
             dxl_comm_result, dxl_error = self.packet_handler.write2ByteTxRx(

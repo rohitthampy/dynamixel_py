@@ -1,4 +1,5 @@
 from typing import Any
+from math import pi
 from dynamixel_sdk.robotis_def import *
 from dynamixel_sdk.packet_handler import PacketHandler
 
@@ -14,3 +15,20 @@ class DxlUtils:
                                )
         elif hardware_result != 0:
             raise RuntimeError(f"{pack_h_instance.getRxPacketError(hardware_result)}")
+
+    def pulse_to_angle(self, pulse: int, mid_val: float, is_radian: bool):
+        if is_radian:
+            angle = pi * float(pulse) / mid_val
+        else:
+            angle = 180 * float(pulse) / mid_val
+        return angle
+
+    def angle_to_pulse(self, angle: float, mid_val: float, is_radian : bool):
+        if is_radian:
+            pulse = int(mid_val * angle / pi)
+        else:
+            pulse = int(mid_val * angle / 180)
+        return pulse
+
+    def convert_to_bytes(self):
+        pass
