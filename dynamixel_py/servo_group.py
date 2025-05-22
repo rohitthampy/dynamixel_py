@@ -1,7 +1,9 @@
 from .dynamixel_manager import *
 from typing import Union
 from dynamixel_sdk import GroupSyncRead, GroupSyncWrite
+from .utilities import DxlUtils
 
+utils = DxlUtils()
 
 class ServoGroup:
     def __init__(self):
@@ -109,7 +111,7 @@ class ServoGroup:
                     self.servos[dxl_id].middle_pos_val * goal_positions[i] / 180
                 )
 
-            param_data = self.convert_to_bytes(value=goal_pos, data_bytes=data_length)
+            param_data = utils.convert_to_bytes(value=goal_pos, data_bytes=data_length)
             success = sync_write.addParam(dxl_id=dxl_id, data=param_data)
 
             if not success:
@@ -152,31 +154,31 @@ class ServoGroup:
         if comm_result != COMM_SUCCESS:
             raise RuntimeError(f"\n{packet_h.getTxRxResult(comm_result)}")
 
-    def convert_to_bytes(self, value, data_bytes):
-        # Referenced from - https://github.com/huggingface/lerobot/blob/main/lerobot/common/robot_devices/motors/dynamixel.py
-
-        if data_bytes == 1:
-            data = [
-                DXL_LOBYTE(DXL_LOWORD(value)),
-            ]
-        elif data_bytes == 2:
-            data = [
-                DXL_LOBYTE(DXL_LOWORD(value)),
-                DXL_HIBYTE(DXL_LOWORD(value)),
-            ]
-        elif data_bytes == 4:
-            data = [
-                DXL_LOBYTE(DXL_LOWORD(value)),
-                DXL_HIBYTE(DXL_LOWORD(value)),
-                DXL_LOBYTE(DXL_HIWORD(value)),
-                DXL_HIBYTE(DXL_HIWORD(value)),
-            ]
-        else:
-            raise NotImplementedError(
-                f"Value of the number of bytes to be sent is expected to be in [1, 2, 4], but "
-                f"{data_bytes} is provided instead."
-            )
-        return data
+    # def convert_to_bytes(self, value, data_bytes):
+    #     # Referenced from - https://github.com/huggingface/lerobot/blob/main/lerobot/common/robot_devices/motors/dynamixel.py
+    #
+    #     if data_bytes == 1:
+    #         data = [
+    #             DXL_LOBYTE(DXL_LOWORD(value)),
+    #         ]
+    #     elif data_bytes == 2:
+    #         data = [
+    #             DXL_LOBYTE(DXL_LOWORD(value)),
+    #             DXL_HIBYTE(DXL_LOWORD(value)),
+    #         ]
+    #     elif data_bytes == 4:
+    #         data = [
+    #             DXL_LOBYTE(DXL_LOWORD(value)),
+    #             DXL_HIBYTE(DXL_LOWORD(value)),
+    #             DXL_LOBYTE(DXL_HIWORD(value)),
+    #             DXL_HIBYTE(DXL_HIWORD(value)),
+    #         ]
+    #     else:
+    #         raise NotImplementedError(
+    #             f"Value of the number of bytes to be sent is expected to be in [1, 2, 4], but "
+    #             f"{data_bytes} is provided instead."
+    #         )
+    #     return data
 
     # def get_servo_ids(self):
     #

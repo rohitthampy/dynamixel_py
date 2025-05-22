@@ -30,3 +30,4 @@ for i in range(10):
 
 servo_group.sync_set_positions([180, 180, 180])
 time.sleep(0.5)
+servo_group.sync_torques_enabled(False)

@@ -30,5 +30,27 @@ class DxlUtils:
             pulse = int(mid_val * angle / 180)
         return pulse
 
-    def convert_to_bytes(self):
-        pass
+    # Referenced from - https://github.com/huggingface/lerobot/blob/main/lerobot/common/robot_devices/motors/dynamixel.py
+    def convert_to_bytes(self, data_bytes: int, value: Any):
+        if data_bytes == 1:
+            data = [
+                DXL_LOBYTE(DXL_LOWORD(value)),
+            ]
+        elif data_bytes == 2:
+            data = [
+                DXL_LOBYTE(DXL_LOWORD(value)),
+                DXL_HIBYTE(DXL_LOWORD(value)),
+            ]
+        elif data_bytes == 4:
+            data = [
+                DXL_LOBYTE(DXL_LOWORD(value)),
+                DXL_HIBYTE(DXL_LOWORD(value)),
+                DXL_LOBYTE(DXL_HIWORD(value)),
+                DXL_HIBYTE(DXL_HIWORD(value)),
+            ]
+        else:
+            raise ValueError(
+                f"Value of the number of bytes to be sent is expected to be in [1, 2, 4], but "
+                f"{data_bytes} is provided instead."
+            )
+        return data
