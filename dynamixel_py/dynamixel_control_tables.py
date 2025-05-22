@@ -52,6 +52,7 @@ class AX12:
     ADDR_GOAL_POSITION = 30
     ADDR_PRESENT_POSITION = 36
 
+
 class MX12:
     # Control table addresses for MX12
     # EEPROM Area - Permanently stored in memory once changed
@@ -64,8 +65,10 @@ class MX12:
     ADDR_PRESENT_POSITION = 36
 
 
-control_tables = {1:{"AX12": AX12, "MX12": MX12},
-                  2: {"XL330": XL330, "XC330": XC330, "XL430": XL430}}
+control_tables = {
+    1: {"AX12": AX12, "MX12": MX12},
+    2: {"XL330": XL330, "XC330": XC330, "XL430": XL430},
+}
 
 if __name__ == "__main__":
     for items in control_tables:
