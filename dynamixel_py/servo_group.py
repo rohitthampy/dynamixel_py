@@ -5,6 +5,7 @@ from .utilities import DxlUtils
 
 utils = DxlUtils()
 
+
 class ServoGroup:
     def __init__(self):
         self.servos: dict[int, Servo] = {}
@@ -51,7 +52,7 @@ class ServoGroup:
 
     def sync_get_positions(self, is_radian: bool = False):
         ref_servo = self.servos[
-            list(self.servos)[0]# Taking the first servo's config as reference
+            list(self.servos)[0]  # Taking the first servo's config as reference
         ]
         port_h = ref_servo.port_handler
         packet_h = ref_servo.packet_handler
@@ -71,9 +72,11 @@ class ServoGroup:
             if sync_read.isAvailable(dxl_id, start_addr, data_length):
                 raw_position = sync_read.getData(dxl_id, start_addr, data_length)
 
-                angle = utils.pulse_to_angle(pulse=raw_position,
-                                             mid_val=self.servos[dxl_id].middle_pos_val,
-                                             is_radian=is_radian)
+                angle = utils.pulse_to_angle(
+                    pulse=raw_position,
+                    mid_val=self.servos[dxl_id].middle_pos_val,
+                    is_radian=is_radian,
+                )
 
                 current_positions.append(angle)
             else:
@@ -98,9 +101,11 @@ class ServoGroup:
 
         for i, dxl_id in enumerate(self.servos.keys()):
 
-            goal_pos = utils.angle_to_pulse(angle=goal_positions[i],
-                                            mid_val=self.servos[dxl_id].middle_pos_val,
-                                            is_radian=is_radian)
+            goal_pos = utils.angle_to_pulse(
+                angle=goal_positions[i],
+                mid_val=self.servos[dxl_id].middle_pos_val,
+                is_radian=is_radian,
+            )
 
             param_data = utils.convert_to_bytes(value=goal_pos, data_bytes=data_length)
             success = sync_write.addParam(dxl_id=dxl_id, data=param_data)
