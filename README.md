@@ -13,9 +13,10 @@ It has three classes.
 - `ServoGroup` is responsible for sending commands and receiving data from servos with the same control table and protocol simultaneously.
 
 ## Installing
+
 ### Simple install
-The quickest and easiest way of installing this library is through pip. 
-Run the command `pip install dynamixel-py`.
+The quickest and easiest way of installing this library is through pip.
+Run the command `pip install dynamixel-py`
 
 ### Install from source
 1) Clone this repository using `git clone https://github.com/rohitthampy/dynamixel_py.git`
