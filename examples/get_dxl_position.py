@@ -2,7 +2,7 @@ import time
 
 from dynamixel_py import DxlComm, Servo
 
-# Starting communication for Dynamixel servo
+# Starting communication with U2D2 or similar device
 serial = DxlComm(port="/dev/ttyUSB0")  # Eg: COM28 for windows
 
 # Declaring a servo object
