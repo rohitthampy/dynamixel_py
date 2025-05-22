@@ -10,6 +10,7 @@ HOMING_OFFSET = 0
 
 utils = DxlUtils()
 
+
 class DxlComm:
 
     def __init__(self, port: str = None, baud_rate: int = 57600):
@@ -48,8 +49,12 @@ class DxlComm:
         tmp_packet_handler = PacketHandler(DEFAULT_PROTOCOL_VERSION)
 
         found_servos = []
-        dxl_data, dxl_comm_result = tmp_packet_handler.broadcastPing(port=self.port_handler)
-        utils.print_comm_error(comm_result=dxl_comm_result, pack_h_instance=tmp_packet_handler)
+        dxl_data, dxl_comm_result = tmp_packet_handler.broadcastPing(
+            port=self.port_handler
+        )
+        utils.print_comm_error(
+            comm_result=dxl_comm_result, pack_h_instance=tmp_packet_handler
+        )
 
         for ids in dxl_data:
             found_servos.append(ids)
@@ -132,9 +137,11 @@ class Servo:
             homing_pos,
         )
 
-        utils.print_comm_hardware_error(pack_h_instance=self.packet_handler,
-                                        comm_result=dxl_comm_result,
-                                        hardware_result=dxl_error)
+        utils.print_comm_hardware_error(
+            pack_h_instance=self.packet_handler,
+            comm_result=dxl_comm_result,
+            hardware_result=dxl_error,
+        )
         print(
             f"Homing offset for servo with id {self.servo_id} is set to: {angle_offset}"
         )
@@ -147,9 +154,11 @@ class Servo:
             is_enabled,
         )
 
-        utils.print_comm_hardware_error(pack_h_instance=self.packet_handler,
-                                   comm_result=dxl_comm_result,
-                                   hardware_result=dxl_error)
+        utils.print_comm_hardware_error(
+            pack_h_instance=self.packet_handler,
+            comm_result=dxl_comm_result,
+            hardware_result=dxl_error,
+        )
         print(f"Torque for servo with id {self.servo_id} is set to: {is_enabled}")
         self.is_torque_enabled = is_enabled
 
@@ -167,15 +176,21 @@ class Servo:
                 self.control_table.ADDR_PRESENT_POSITION,
             )
 
-        utils.print_comm_hardware_error(pack_h_instance=self.packet_handler,
-                                   comm_result=dxl_comm_result,
-                                   hardware_result=dxl_error)
+        utils.print_comm_hardware_error(
+            pack_h_instance=self.packet_handler,
+            comm_result=dxl_comm_result,
+            hardware_result=dxl_error,
+        )
 
-        angle = utils.pulse_to_angle(pulse=reg_data, mid_val=self.middle_pos_val, is_radian=is_radian)
+        angle = utils.pulse_to_angle(
+            pulse=reg_data, mid_val=self.middle_pos_val, is_radian=is_radian
+        )
         return angle
 
     def _set_goal_pos(self, angle: float, is_radian: bool = False) -> None:
-        self.goal_pos = utils.angle_to_pulse(angle=angle, mid_val=self.middle_pos_val, is_radian=is_radian)
+        self.goal_pos = utils.angle_to_pulse(
+            angle=angle, mid_val=self.middle_pos_val, is_radian=is_radian
+        )
 
     def set_position(self, goal_pos, radian=False) -> None:
 
@@ -197,6 +212,8 @@ class Servo:
                 self.goal_pos,
             )
 
-        utils.print_comm_hardware_error(pack_h_instance=self.packet_handler,
-                                   comm_result=dxl_comm_result,
-                                   hardware_result=dxl_error)
+        utils.print_comm_hardware_error(
+            pack_h_instance=self.packet_handler,
+            comm_result=dxl_comm_result,
+            hardware_result=dxl_error,
+        )
