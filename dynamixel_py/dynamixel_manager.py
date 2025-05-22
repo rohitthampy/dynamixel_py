@@ -40,6 +40,21 @@ class DxlComm:
     def set_comm_baud_rate(self):
         self.port_handler.setBaudRate(baudrate=self.baud_rate)
 
+    def get_servo_ids(self) -> list:
+
+        if DEFAULT_PROTOCOL_VERSION == 1:
+            raise RuntimeError("The method get_servo_ids only works with Protocol 2.0")
+
+        tmp_packet_handler = PacketHandler(DEFAULT_PROTOCOL_VERSION)
+
+        found_servos = []
+        dxl_data, dxl_comm_result = tmp_packet_handler.broadcastPing(port=self.port_handler)
+        utils.print_comm_error(comm_result=dxl_comm_result, pack_h_instance=tmp_packet_handler)
+
+        for ids in dxl_data:
+            found_servos.append(ids)
+        return found_servos
+
     def __del__(self):
         self.port_handler.closePort()
 
@@ -156,19 +171,11 @@ class Servo:
                                    comm_result=dxl_comm_result,
                                    hardware_result=dxl_error)
 
-        # if is_radian:
-        #     angle = pi * float(reg_data) / self.middle_pos_val
-        # else:
-        #     angle = 180 * float(reg_data) / self.middle_pos_val
         angle = utils.pulse_to_angle(pulse=reg_data, mid_val=self.middle_pos_val, is_radian=is_radian)
         return angle
 
     def _set_goal_pos(self, angle: float, is_radian: bool = False) -> None:
         self.goal_pos = utils.angle_to_pulse(angle=angle, mid_val=self.middle_pos_val, is_radian=is_radian)
-        # if is_radian:
-        #     self.goal_pos = int(self.middle_pos_val * angle / pi)
-        # else:
-        #     self.goal_pos = int(self.middle_pos_val * angle / 180)
 
     def set_position(self, goal_pos, radian=False) -> None:
 
@@ -193,14 +200,3 @@ class Servo:
         utils.print_comm_hardware_error(pack_h_instance=self.packet_handler,
                                    comm_result=dxl_comm_result,
                                    hardware_result=dxl_error)
-    # def _print_comm_error_result(self, comm_result: Any, error: Any) -> None:
-    #     if comm_result != COMM_SUCCESS:
-    #         print(
-    #             "Please check the following:\n"
-    #             "Is the motor connected and powered?\n"
-    #             "Is the correct servo_id entered?\n"
-    #             "Is the correct baud rate set?\n"
-    #         )
-    #         raise RuntimeError(f"\n{self.packet_handler.getTxRxResult(comm_result)}")
-    #     elif error != 0:
-    #         raise RuntimeError(f"{self.packet_handler.getRxPacketError(error)}")

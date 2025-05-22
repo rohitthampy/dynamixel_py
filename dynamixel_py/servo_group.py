@@ -51,8 +51,8 @@ class ServoGroup:
 
     def sync_get_positions(self, is_radian: bool = False):
         ref_servo = self.servos[
-            list(self.servos)[0]
-        ]  # Taking the first servo's config as reference
+            list(self.servos)[0]# Taking the first servo's config as reference
+        ]
         port_h = ref_servo.port_handler
         packet_h = ref_servo.packet_handler
         start_addr = ref_servo.control_table.ADDR_PRESENT_POSITION
@@ -64,21 +64,17 @@ class ServoGroup:
             sync_read.addParam(dxl_id=dxl_id)
 
         comm_result = sync_read.txRxPacket()
-        self._print_error(comm_result=comm_result, packet_h=packet_h)
+        utils.print_comm_error(comm_result=comm_result, pack_h_instance=packet_h)
 
         current_positions = []
         for dxl_id in self.servos.keys():
             if sync_read.isAvailable(dxl_id, start_addr, data_length):
                 raw_position = sync_read.getData(dxl_id, start_addr, data_length)
 
-                if is_radian:
-                    angle = (
-                        pi * float(raw_position) / self.servos[dxl_id].middle_pos_val
-                    )
-                else:
-                    angle = (
-                        180 * float(raw_position) / self.servos[dxl_id].middle_pos_val
-                    )
+                angle = utils.pulse_to_angle(pulse=raw_position,
+                                             mid_val=self.servos[dxl_id].middle_pos_val,
+                                             is_radian=is_radian)
+
                 current_positions.append(angle)
             else:
                 raise RuntimeError(
@@ -102,14 +98,9 @@ class ServoGroup:
 
         for i, dxl_id in enumerate(self.servos.keys()):
 
-            if is_radian:
-                goal_pos = int(
-                    self.servos[dxl_id].middle_pos_val * goal_positions[i] / pi
-                )
-            else:
-                goal_pos = int(
-                    self.servos[dxl_id].middle_pos_val * goal_positions[i] / 180
-                )
+            goal_pos = utils.angle_to_pulse(angle=goal_positions[i],
+                                            mid_val=self.servos[dxl_id].middle_pos_val,
+                                            is_radian=is_radian)
 
             param_data = utils.convert_to_bytes(value=goal_pos, data_bytes=data_length)
             success = sync_write.addParam(dxl_id=dxl_id, data=param_data)
@@ -118,8 +109,7 @@ class ServoGroup:
                 raise RuntimeError(f"Failed to set goal_pos for servo with id {dxl_id}")
 
             comm_result = sync_write.txPacket()
-            self._print_error(comm_result=comm_result, packet_h=packet_h)
-
+            utils.print_comm_error(comm_result=comm_result, pack_h_instance=packet_h)
             sync_write.clearParam()
 
     def sync_torques_enabled(self, is_enabled: bool = False):
@@ -140,8 +130,7 @@ class ServoGroup:
                 raise RuntimeError(f"Failed to set torque for servo with ID {dxl_id}")
 
         comm_result = sync_write.txPacket()
-        self._print_error(comm_result=comm_result, packet_h=packet_h)
-
+        utils.print_comm_error(comm_result=comm_result, pack_h_instance=packet_h)
         sync_write.clearParam()
 
     def bulk_read(self):
@@ -149,48 +138,3 @@ class ServoGroup:
 
     def bulk_write(self):
         pass
-
-    def _print_error(self, comm_result, packet_h) -> None:
-        if comm_result != COMM_SUCCESS:
-            raise RuntimeError(f"\n{packet_h.getTxRxResult(comm_result)}")
-
-    # def convert_to_bytes(self, value, data_bytes):
-    #     # Referenced from - https://github.com/huggingface/lerobot/blob/main/lerobot/common/robot_devices/motors/dynamixel.py
-    #
-    #     if data_bytes == 1:
-    #         data = [
-    #             DXL_LOBYTE(DXL_LOWORD(value)),
-    #         ]
-    #     elif data_bytes == 2:
-    #         data = [
-    #             DXL_LOBYTE(DXL_LOWORD(value)),
-    #             DXL_HIBYTE(DXL_LOWORD(value)),
-    #         ]
-    #     elif data_bytes == 4:
-    #         data = [
-    #             DXL_LOBYTE(DXL_LOWORD(value)),
-    #             DXL_HIBYTE(DXL_LOWORD(value)),
-    #             DXL_LOBYTE(DXL_HIWORD(value)),
-    #             DXL_HIBYTE(DXL_HIWORD(value)),
-    #         ]
-    #     else:
-    #         raise NotImplementedError(
-    #             f"Value of the number of bytes to be sent is expected to be in [1, 2, 4], but "
-    #             f"{data_bytes} is provided instead."
-    #         )
-    #     return data
-
-    # def get_servo_ids(self):
-    #
-    #     if self.protocol_version == 1:
-    #         print("The method get_servo_ids only works with Protocol 2.0")
-    #         quit()
-    #
-    #     found_servos = []
-    #     dxl_data, dxl_comm_result = self.packet_handler.broadcastPing(port=self.port_handler)
-    #     if dxl_comm_result != COMM_SUCCESS:
-    #         print(f"{self.packet_handler.getTxRxResult(dxl_comm_result)}")
-    #
-    #     for ids in dxl_data:
-    #         found_servos.append(ids)
-    #     return found_servos

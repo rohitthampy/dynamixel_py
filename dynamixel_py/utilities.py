@@ -16,6 +16,10 @@ class DxlUtils:
         elif hardware_result != 0:
             raise RuntimeError(f"{pack_h_instance.getRxPacketError(hardware_result)}")
 
+    def print_comm_error(self, comm_result: Any, pack_h_instance: PacketHandler):
+        if comm_result != COMM_SUCCESS:
+            raise RuntimeError(f"\n{pack_h_instance.getTxRxResult(comm_result)}")
+
     def pulse_to_angle(self, pulse: int, mid_val: float, is_radian: bool):
         if is_radian:
             angle = pi * float(pulse) / mid_val
