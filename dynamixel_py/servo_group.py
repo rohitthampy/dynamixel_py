@@ -1,4 +1,4 @@
-from .dynamixel_manager import *
+from .dynamixel_handler import *
 from typing import Union
 from dynamixel_sdk import GroupSyncRead, GroupSyncWrite
 from .utilities import DxlUtils
