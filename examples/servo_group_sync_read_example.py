@@ -13,8 +13,9 @@ print(servo_group.get_total_servos())
 
 servo_group.sync_torques_enabled(False)
 
-while True:
-    try:
+try:
+    while True:
         print(servo_group.sync_get_positions())
-    except KeyboardInterrupt:
-        print("Stopping program")
+
+except KeyboardInterrupt:
+    print("Stopping program")

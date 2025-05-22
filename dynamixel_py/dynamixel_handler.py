@@ -1,13 +1,14 @@
 from dynamixel_sdk import *
 from .dynamixel_control_tables import *
+from .utilities import DxlUtils
 from serial import SerialException
-from typing import Any
 from math import pi
 
 PORT_HANDLER = None
 DEFAULT_PROTOCOL_VERSION = 2
 HOMING_OFFSET = 0
 
+utils = DxlUtils()
 
 class DxlComm:
 
@@ -38,6 +39,21 @@ class DxlComm:
 
     def set_comm_baud_rate(self):
         self.port_handler.setBaudRate(baudrate=self.baud_rate)
+
+    def get_servo_ids(self) -> list:
+
+        if DEFAULT_PROTOCOL_VERSION == 1:
+            raise RuntimeError("The method get_servo_ids only works with Protocol 2.0")
+
+        tmp_packet_handler = PacketHandler(DEFAULT_PROTOCOL_VERSION)
+
+        found_servos = []
+        dxl_data, dxl_comm_result = tmp_packet_handler.broadcastPing(port=self.port_handler)
+        utils.print_comm_error(comm_result=dxl_comm_result, pack_h_instance=tmp_packet_handler)
+
+        for ids in dxl_data:
+            found_servos.append(ids)
+        return found_servos
 
     def __del__(self):
         self.port_handler.closePort()
@@ -115,7 +131,10 @@ class Servo:
             self.control_table.ADDR_HOMING_OFFSET,
             homing_pos,
         )
-        self._print_comm_error_result(dxl_comm_result, dxl_error)
+
+        utils.print_comm_hardware_error(pack_h_instance=self.packet_handler,
+                                        comm_result=dxl_comm_result,
+                                        hardware_result=dxl_error)
         print(
             f"Homing offset for servo with id {self.servo_id} is set to: {angle_offset}"
         )
@@ -128,11 +147,13 @@ class Servo:
             is_enabled,
         )
 
-        self._print_comm_error_result(dxl_comm_result, dxl_error)
+        utils.print_comm_hardware_error(pack_h_instance=self.packet_handler,
+                                   comm_result=dxl_comm_result,
+                                   hardware_result=dxl_error)
         print(f"Torque for servo with id {self.servo_id} is set to: {is_enabled}")
         self.is_torque_enabled = is_enabled
 
-    def get_position(self, radian: bool = False) -> float:
+    def get_position(self, is_radian: bool = False) -> float:
         if self.protocol_version == 1:
             reg_data, dxl_comm_result, dxl_error = self.packet_handler.read2ByteTxRx(
                 self.port_handler,
@@ -145,23 +166,20 @@ class Servo:
                 self.servo_id,
                 self.control_table.ADDR_PRESENT_POSITION,
             )
-        self._print_comm_error_result(dxl_comm_result, dxl_error)
 
-        if radian:
-            angle = pi * float(reg_data) / self.middle_pos_val
-        else:
-            angle = 180 * float(reg_data) / self.middle_pos_val
+        utils.print_comm_hardware_error(pack_h_instance=self.packet_handler,
+                                   comm_result=dxl_comm_result,
+                                   hardware_result=dxl_error)
+
+        angle = utils.pulse_to_angle(pulse=reg_data, mid_val=self.middle_pos_val, is_radian=is_radian)
         return angle
 
-    def _set_goal_pos(self, angle: float, radian: bool = False) -> None:
-        if radian:
-            self.goal_pos = int(self.middle_pos_val * angle / pi)
-        else:
-            self.goal_pos = int(self.middle_pos_val * angle / 180)
+    def _set_goal_pos(self, angle: float, is_radian: bool = False) -> None:
+        self.goal_pos = utils.angle_to_pulse(angle=angle, mid_val=self.middle_pos_val, is_radian=is_radian)
 
     def set_position(self, goal_pos, radian=False) -> None:
 
-        self._set_goal_pos(angle=goal_pos, radian=radian)
+        self._set_goal_pos(angle=goal_pos, is_radian=radian)
 
         if self.protocol_version == 1:
             dxl_comm_result, dxl_error = self.packet_handler.write2ByteTxRx(
@@ -179,16 +197,6 @@ class Servo:
                 self.goal_pos,
             )
 
-        self._print_comm_error_result(dxl_comm_result, dxl_error)
-
-    def _print_comm_error_result(self, comm_result: Any, error: Any) -> None:
-        if comm_result != COMM_SUCCESS:
-            print(
-                "Please check the following:\n"
-                "Is the motor connected and powered?\n"
-                "Is the correct servo_id entered?\n"
-                "Is the correct baud rate set?\n"
-            )
-            raise RuntimeError(f"\n{self.packet_handler.getTxRxResult(comm_result)}")
-        elif error != 0:
-            raise RuntimeError(f"{self.packet_handler.getRxPacketError(error)}")
+        utils.print_comm_hardware_error(pack_h_instance=self.packet_handler,
+                                   comm_result=dxl_comm_result,
+                                   hardware_result=dxl_error)

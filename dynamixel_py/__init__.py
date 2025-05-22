@@ -1,2 +1,2 @@
-from .dynamixel_manager import *
+from .dynamixel_handler import *
 from .servo_group import *
