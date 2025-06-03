@@ -1,5 +1,5 @@
 from .dynamixel_handler import *
-from typing import Union
+from typing import Union, Dict, List
 from dynamixel_sdk import GroupSyncRead, GroupSyncWrite
 from .utilities import DxlUtils
 
@@ -8,7 +8,7 @@ utils = DxlUtils()
 
 class ServoGroup:
     def __init__(self):
-        self.servos: dict[int, Servo] = {}
+        self.servos: Dict[int, Servo] = {}
         self.total_servos = 0
 
     def _add_servo(self, servo: Servo):
@@ -20,7 +20,7 @@ class ServoGroup:
             print(f"Added servo with id {servo.servo_id}")
             self.total_servos += 1
 
-    def add_servos(self, servo_list: Union[Servo, list[Servo]]):
+    def add_servos(self, servo_list: Union[Servo, List[Servo]]):
         if isinstance(servo_list, list):
             for servo in servo_list:
                 self._add_servo(servo)
@@ -34,7 +34,7 @@ class ServoGroup:
         else:
             raise ValueError(f"Unable to find servo with id {servo.servo_id}")
 
-    def remove_servos(self, servo_list: Union[Servo, list[Servo]]):
+    def remove_servos(self, servo_list: Union[Servo, List[Servo]]):
         if isinstance(servo_list, list):
             for servo in servo_list:
                 self._remove_servo(servo)
@@ -88,7 +88,7 @@ class ServoGroup:
 
         return current_positions
 
-    def sync_set_positions(self, goal_positions: list[float], is_radian: bool = False):
+    def sync_set_positions(self, goal_positions: List[float], is_radian: bool = False):
         ref_servo = self.servos[list(self.servos)[0]]
         port_h = ref_servo.port_handler
         packet_h = ref_servo.packet_handler
